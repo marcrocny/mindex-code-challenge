@@ -1,19 +1,23 @@
-﻿using Newtonsoft.Json;
-using System.IO;
-using System.Net.Http;
+﻿using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace CodeChallenge.Tests.Integration.Extensions
 {
     public static class HttpResponseMessageExtensions
     {
-        public static T DeserializeContent<T>(this HttpResponseMessage message)
+        private readonly static JsonSerializerOptions jsonSerializerOptions = new()
         {
-            T responseObject = default(T);
+            PropertyNameCaseInsensitive = true,
+        };
+
+        public static async Task<T> DeserializeContent<T>(this HttpResponseMessage message)
+        {
+            T responseObject = default;
             if(message != null)
             {
-                var responseJson = message.Content.ReadAsStringAsync().Result;
-                responseObject = JsonSerializer.CreateDefault().Deserialize<T>(
-                    new JsonTextReader(new StringReader(responseJson)));
+                var responseJson = await message.Content.ReadAsStringAsync();
+                responseObject = JsonSerializer.Deserialize<T>(responseJson, jsonSerializerOptions);
             }
 
             return responseObject;

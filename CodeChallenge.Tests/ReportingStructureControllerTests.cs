@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
-
+using System.Text.Json;
+using System.Threading.Tasks;
 using CodeChallenge.Models;
 
 using CodeChallenge.Tests.Integration.Extensions;
@@ -15,6 +16,10 @@ namespace CodeChallenge.Tests.Integration
     {
         private static HttpClient _httpClient;
         private static TestServer _testServer;
+        private readonly static JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
 
         [ClassInitialize]
         // Attribute ClassInitialize requires this signature
@@ -36,15 +41,14 @@ namespace CodeChallenge.Tests.Integration
         [DataRow("16a596ae-edd3-4847-99fe-c4518e82c86f", 4)]
         [DataRow("03aa1462-ffa9-4978-901b-7c001562cf6f", 2)]
         [DataRow("62c1084e-6e34-4630-93fd-9153afb65309", 0)]
-        public void GetReportingById_Expected(string employeeId, int expectedReports)
+        public async Task GetReportingById_Expected(string employeeId, int expectedReports)
         {
             // Execute
-            var getRequestTask = _httpClient.GetAsync($"api/reporting/{employeeId}");
-            var response = getRequestTask.Result;
+            var response = await _httpClient.GetAsync($"api/reporting/{employeeId}");
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var reporting = response.DeserializeContent<ReportingStructure>();
+            var reporting = JsonSerializer.Deserialize<ReportingStructure>(await response.Content.ReadAsStringAsync(), jsonOptions);
             Assert.AreEqual(expectedReports, reporting.NumberOfReports);
         }
     }

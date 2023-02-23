@@ -2,12 +2,13 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
-
+using System.Text.Json;
+using System.Threading.Tasks;
 using CodeChallenge.Models;
 
 using CodeChallenge.Tests.Integration.Extensions;
 using CodeChallenge.Tests.Integration.Helpers;
-
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CodeChallenge.Tests.Integration
@@ -34,7 +35,7 @@ namespace CodeChallenge.Tests.Integration
         }
 
         [TestMethod]
-        public void CreateEmployee_Returns_Created()
+        public async Task CreateEmployee_Returns_Created()
         {
             // Arrange
             var employee = new Employee()
@@ -45,26 +46,22 @@ namespace CodeChallenge.Tests.Integration
                 Position = "Receiver",
             };
 
-            var requestContent = new JsonSerialization().ToJson(employee);
+            var requestContent = JsonSerializer.Serialize(employee);
 
             // Execute
-            var postRequestTask = _httpClient.PostAsync("api/employee",
+            var response = await _httpClient.PostAsync("api/employee",
                new StringContent(requestContent, Encoding.UTF8, "application/json"));
-            var response = postRequestTask.Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var newEmployee = response.DeserializeContent<Employee>();
-            Assert.IsNotNull(newEmployee.EmployeeId);
-            Assert.AreEqual(employee.FirstName, newEmployee.FirstName);
-            Assert.AreEqual(employee.LastName, newEmployee.LastName);
-            Assert.AreEqual(employee.Department, newEmployee.Department);
-            Assert.AreEqual(employee.Position, newEmployee.Position);
+            var newEmployee = await response.DeserializeContent<Employee>();
+            newEmployee.EmployeeId.Should().NotBeNull();
+            newEmployee.Should().BeEquivalentTo(employee, o => o.Excluding(e => e.EmployeeId));
         }
 
         [TestMethod]
-        public void GetEmployeeById_Returns_Ok()
+        public async Task GetEmployeeById_Returns_Ok()
         {
             // Arrange
             var employeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f";
@@ -72,18 +69,17 @@ namespace CodeChallenge.Tests.Integration
             var expectedLastName = "Lennon";
 
             // Execute
-            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}");
-            var response = getRequestTask.Result;
+            var response = await _httpClient.GetAsync($"api/employee/{employeeId}");
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var employee = response.DeserializeContent<Employee>();
-            Assert.AreEqual(expectedFirstName, employee.FirstName);
-            Assert.AreEqual(expectedLastName, employee.LastName);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var employee = await response.DeserializeContent<Employee>();
+            employee.FirstName.Should().Be(expectedFirstName);
+            employee.LastName.Should().Be(expectedLastName);
         }
 
         [TestMethod]
-        public void UpdateEmployee_Returns_Ok()
+        public async Task UpdateEmployee_Returns_Ok()
         {
             // Arrange
             var employee = new Employee()
@@ -94,42 +90,38 @@ namespace CodeChallenge.Tests.Integration
                 LastName = "Best",
                 Position = "Developer VI",
             };
-            var requestContent = new JsonSerialization().ToJson(employee);
+            var requestContent = JsonSerializer.Serialize(employee);
 
             // Execute
-            var putRequestTask = _httpClient.PutAsync($"api/employee/{employee.EmployeeId}",
+            var response = await _httpClient.PutAsync($"api/employee/{employee.EmployeeId}",
                new StringContent(requestContent, Encoding.UTF8, "application/json"));
-            var putResponse = putRequestTask.Result;
-            
-            // Assert
-            Assert.AreEqual(HttpStatusCode.OK, putResponse.StatusCode);
-            var newEmployee = putResponse.DeserializeContent<Employee>();
 
-            Assert.AreEqual(employee.FirstName, newEmployee.FirstName);
-            Assert.AreEqual(employee.LastName, newEmployee.LastName);
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var newEmployee = await response.DeserializeContent<Employee>();
+            newEmployee.Should().BeEquivalentTo(employee);
         }
 
         [TestMethod]
-        public void UpdateEmployee_Returns_NotFound()
+        public async Task UpdateEmployee_Returns_NotFound()
         {
             // Arrange
             var employee = new Employee()
             {
                 EmployeeId = "Invalid_Id",
                 Department = "Music",
-                FirstName = "Sunny",
+                FirstName = "Sonny",
                 LastName = "Bono",
                 Position = "Singer/Song Writer",
             };
-            var requestContent = new JsonSerialization().ToJson(employee);
+            var requestContent = JsonSerializer.Serialize(employee);
 
             // Execute
-            var postRequestTask = _httpClient.PutAsync($"api/employee/{employee.EmployeeId}",
+            var response = await _httpClient.PutAsync($"api/employee/{employee.EmployeeId}",
                new StringContent(requestContent, Encoding.UTF8, "application/json"));
-            var response = postRequestTask.Result;
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
