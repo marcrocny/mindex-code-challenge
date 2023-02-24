@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using CodeChallenge.Models;
 using CodeChallenge.Data;
@@ -26,20 +25,14 @@ namespace CodeChallenge.Repositories
             return employee;
         }
 
-        public Employee GetById(string id)
-        {
-            return _employeeContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
-        }
+        public Task<Employee> GetById(string id)
+            => _employeeContext.Employees.SingleOrDefaultAsync(e => e.EmployeeId == id);
 
         public Task SaveAsync()
-        {
-            return _employeeContext.SaveChangesAsync();
-        }
+            => _employeeContext.SaveChangesAsync();
 
         public Employee Remove(Employee employee)
-        {
-            return _employeeContext.Remove(employee).Entity;
-        }
+            => _employeeContext.Remove(employee).Entity;
 
         public Task<Employee> GetWithChildren(string id)
             => _employeeContext.Employees

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CodeChallenge.Models;
 using CodeChallenge.Repositories;
 
@@ -15,22 +16,22 @@ namespace CodeChallenge.Services
             //_logger = logger;
         }
 
-        public Employee Create(Employee employee)
+        public async Task<Employee> Create(Employee employee)
         {
             if(employee != null)
             {
                 _employeeRepository.Add(employee);
-                _employeeRepository.SaveAsync().Wait();
+                await _employeeRepository.SaveAsync();
             }
 
             return employee;
         }
 
-        public Employee GetById(string id)
+        public async Task<Employee> GetById(string id)
         {
             if(!string.IsNullOrEmpty(id))
             {
-                return _employeeRepository.GetById(id);
+                return await _employeeRepository.GetById(id);
             }
 
             return null;
@@ -40,9 +41,9 @@ namespace CodeChallenge.Services
         /// Updates the employee with the matching employeeId.
         /// </summary>
         /// <remarks>Changed to a true update. Prior remove and replace was breaking the hierarchy.</remarks>
-        public Employee Update(Employee newEmployeeInfo)
+        public async Task<Employee> Update(Employee newEmployeeInfo)
         {
-            var loaded = _employeeRepository.GetById(newEmployeeInfo.EmployeeId);
+            var loaded = await _employeeRepository.GetById(newEmployeeInfo.EmployeeId);
             if (loaded == null) return null;
 
             // map onto loaded
@@ -52,7 +53,7 @@ namespace CodeChallenge.Services
             loaded.Department = newEmployeeInfo.Department;
             // let's not mess for now: loaded.DirectReports = ...
 
-            _employeeRepository.SaveAsync().Wait();
+            await _employeeRepository.SaveAsync();
 
             return loaded;
         }

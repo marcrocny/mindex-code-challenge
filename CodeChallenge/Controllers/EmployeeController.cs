@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CodeChallenge.Services;
 using CodeChallenge.Models;
+using System.Threading.Tasks;
 
 namespace CodeChallenge.Controllers
 {
@@ -19,21 +20,21 @@ namespace CodeChallenge.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateEmployee([FromBody] Employee employee)
+        public async Task<IActionResult> CreateEmployee([FromBody] Employee employee)
         {
             _logger.LogDebug("Received employee create request for '{FirstName} {LastName}'", employee.FirstName, employee.LastName);
 
-            _employeeService.Create(employee);
+            await _employeeService.Create(employee);
 
             return CreatedAtRoute("getEmployeeById", new { id = employee.EmployeeId }, employee);
         }
 
         [HttpGet("{id}", Name = "getEmployeeById")]
-        public IActionResult GetEmployeeById(string id)
+        public async Task<IActionResult> GetEmployeeById(string id)
         {
             _logger.LogDebug("Received employee get request for '{Id}'", id);
 
-            var employee = _employeeService.GetById(id);
+            var employee = await _employeeService.GetById(id);
 
             if (employee == null)
                 return NotFound();
@@ -42,12 +43,12 @@ namespace CodeChallenge.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateEmployee(string id, [FromBody]Employee employeeInfo)
+        public async Task<IActionResult> UpdateEmployee(string id, [FromBody]Employee employeeInfo)
         {
             _logger.LogDebug("Recieved employee update request for '{Id}'", id);
 
             employeeInfo.EmployeeId = id;
-            var updated = _employeeService.Update(employeeInfo);
+            var updated = await _employeeService.Update(employeeInfo);
             if (updated == null)
                 return NotFound();
 
