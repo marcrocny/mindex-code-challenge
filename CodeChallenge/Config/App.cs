@@ -1,11 +1,8 @@
 ﻿using System;
-
-using CodeChallenge.Data;
 using CodeChallenge.Repositories;
 using CodeChallenge.Services;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -29,7 +26,6 @@ namespace CodeChallenge.Config
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                SeedEmployeeDB();
             }
 
             app.UseAuthorization();
@@ -50,12 +46,5 @@ namespace CodeChallenge.Config
             services.AddControllers();
         }
 
-        private void SeedEmployeeDB()
-        {
-            new EmployeeDataSeeder(
-                new EmployeeContext(
-                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeDB").Options
-            )).Seed().Wait();
-        }
     }
 }

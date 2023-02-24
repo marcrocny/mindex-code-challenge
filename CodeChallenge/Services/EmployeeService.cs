@@ -1,18 +1,18 @@
-﻿using CodeChallenge.Models;
-using Microsoft.Extensions.Logging;
+using CodeChallenge.Models;
 using CodeChallenge.Repositories;
 
 namespace CodeChallenge.Services
 {
     public class EmployeeService : IEmployeeService
     {
+        //private readonly ILogger<EmployeeService> _logger;
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly ILogger<EmployeeService> _logger;
 
-        public EmployeeService(ILogger<EmployeeService> logger, IEmployeeRepository employeeRepository)
+        public EmployeeService(//ILogger<EmployeeService> logger, 
+            IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
-            _logger = logger;
+            //_logger = logger;
         }
 
         public Employee Create(Employee employee)

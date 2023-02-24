@@ -2,21 +2,21 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CodeChallenge.Models;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using CodeChallenge.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeChallenge.Repositories
 {
     public class EmployeeRespository : IEmployeeRepository
     {
+        // private readonly ILogger<IEmployeeRepository> _logger;
         private readonly EmployeeContext _employeeContext;
-        private readonly ILogger<IEmployeeRepository> _logger;
 
-        public EmployeeRespository(ILogger<IEmployeeRepository> logger, EmployeeContext employeeContext)
+        public EmployeeRespository(//ILogger<IEmployeeRepository> logger,
+            EmployeeContext employeeContext)
         {
+            //_logger = logger;
             _employeeContext = employeeContext;
-            _logger = logger;
         }
 
         public Employee Add(Employee employee)
