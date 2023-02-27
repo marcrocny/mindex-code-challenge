@@ -1,6 +1,6 @@
 ﻿using CodeChallenge.Config;
 using CodeChallenge.Data;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 
@@ -12,19 +12,14 @@ namespace CodeChallenge
         {
             var app = new App().Configure(args);
 
-            // asynchronous startup events here
+            // startup events here
             if (app.Environment.IsDevelopment())
-                await SeedEmployeeDB();
+            {
+                using var scope = app.Services.CreateScope();
+                await scope.ServiceProvider.GetService<EmployeeDataSeeder>().Seed();
+            }
 
             await app.RunAsync();
         }
-
-        /// <summary>Add seed data to the in-memory DB.</summary>
-        /// <remarks>Moved from app-config so that it can be properly awaited at startup.</remarks>
-        private static Task SeedEmployeeDB()
-            => new EmployeeDataSeeder(
-                new EmployeeContext(
-                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeDB").Options
-            )).Seed();
     }
 }
