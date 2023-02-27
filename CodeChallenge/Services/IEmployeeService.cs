@@ -10,6 +10,6 @@ namespace CodeChallenge.Services
     {
         Employee GetById(String id);
         Employee Create(Employee employee);
-        Employee Replace(Employee originalEmployee, Employee newEmployee);
+        Employee Update(Employee newEmployeeInfo);
     }
 }

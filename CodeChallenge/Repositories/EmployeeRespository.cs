@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeChallenge.Models;
@@ -41,5 +40,10 @@ namespace CodeChallenge.Repositories
         {
             return _employeeContext.Remove(employee).Entity;
         }
+
+        public Task<Employee> GetWithChildren(string id)
+            => _employeeContext.Employees
+                .Include(e => e.DirectReports)
+                .SingleOrDefaultAsync(e => e.EmployeeId == id);
     }
 }

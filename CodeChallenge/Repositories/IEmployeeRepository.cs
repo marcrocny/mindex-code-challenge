@@ -10,5 +10,10 @@ namespace CodeChallenge.Repositories
         Employee Add(Employee employee);
         Employee Remove(Employee employee);
         Task SaveAsync();
+
+        /// <summary>
+        /// Returns the employee with direct reports.
+        /// </summary>
+        Task<Employee> GetWithChildren(string id);
     }
 }

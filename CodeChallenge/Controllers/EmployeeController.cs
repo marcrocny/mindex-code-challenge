@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CodeChallenge.Services;
 using CodeChallenge.Models;
@@ -25,7 +21,7 @@ namespace CodeChallenge.Controllers
         [HttpPost]
         public IActionResult CreateEmployee([FromBody] Employee employee)
         {
-            _logger.LogDebug($"Received employee create request for '{employee.FirstName} {employee.LastName}'");
+            _logger.LogDebug("Received employee create request for '{FirstName} {LastName}'", employee.FirstName, employee.LastName);
 
             _employeeService.Create(employee);
 
@@ -33,9 +29,9 @@ namespace CodeChallenge.Controllers
         }
 
         [HttpGet("{id}", Name = "getEmployeeById")]
-        public IActionResult GetEmployeeById(String id)
+        public IActionResult GetEmployeeById(string id)
         {
-            _logger.LogDebug($"Received employee get request for '{id}'");
+            _logger.LogDebug("Received employee get request for '{Id}'", id);
 
             var employee = _employeeService.GetById(id);
 
@@ -46,17 +42,16 @@ namespace CodeChallenge.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult ReplaceEmployee(String id, [FromBody]Employee newEmployee)
+        public IActionResult UpdateEmployee(string id, [FromBody]Employee employeeInfo)
         {
-            _logger.LogDebug($"Recieved employee update request for '{id}'");
+            _logger.LogDebug("Recieved employee update request for '{Id}'", id);
 
-            var existingEmployee = _employeeService.GetById(id);
-            if (existingEmployee == null)
+            employeeInfo.EmployeeId = id;
+            var updated = _employeeService.Update(employeeInfo);
+            if (updated == null)
                 return NotFound();
 
-            _employeeService.Replace(existingEmployee, newEmployee);
-
-            return Ok(newEmployee);
+            return Ok(updated);
         }
     }
 }

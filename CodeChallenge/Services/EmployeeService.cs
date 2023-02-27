@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CodeChallenge.Models;
+﻿using CodeChallenge.Models;
 using Microsoft.Extensions.Logging;
 using CodeChallenge.Repositories;
 
@@ -32,7 +28,7 @@ namespace CodeChallenge.Services
 
         public Employee GetById(string id)
         {
-            if(!String.IsNullOrEmpty(id))
+            if(!string.IsNullOrEmpty(id))
             {
                 return _employeeRepository.GetById(id);
             }
@@ -40,24 +36,25 @@ namespace CodeChallenge.Services
             return null;
         }
 
-        public Employee Replace(Employee originalEmployee, Employee newEmployee)
+        /// <summary>
+        /// Updates the employee with the matching employeeId.
+        /// </summary>
+        /// <remarks>Changed to a true update. Prior remove and replace was breaking the hierarchy.</remarks>
+        public Employee Update(Employee newEmployeeInfo)
         {
-            if(originalEmployee != null)
-            {
-                _employeeRepository.Remove(originalEmployee);
-                if (newEmployee != null)
-                {
-                    // ensure the original has been removed, otherwise EF will complain another entity w/ same id already exists
-                    _employeeRepository.SaveAsync().Wait();
+            var loaded = _employeeRepository.GetById(newEmployeeInfo.EmployeeId);
+            if (loaded == null) return null;
 
-                    _employeeRepository.Add(newEmployee);
-                    // overwrite the new id with previous employee id
-                    newEmployee.EmployeeId = originalEmployee.EmployeeId;
-                }
-                _employeeRepository.SaveAsync().Wait();
-            }
+            // map onto loaded
+            loaded.FirstName = newEmployeeInfo.FirstName;
+            loaded.LastName = newEmployeeInfo.LastName;
+            loaded.Position = newEmployeeInfo.Position;
+            loaded.Department = newEmployeeInfo.Department;
+            // let's not mess for now: loaded.DirectReports = ...
 
-            return newEmployee;
+            _employeeRepository.SaveAsync().Wait();
+
+            return loaded;
         }
     }
 }
