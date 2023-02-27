@@ -24,9 +24,9 @@ namespace CodeChallenge.Controllers
         {
             _logger.LogDebug("Received employee create request for '{FirstName} {LastName}'", employee.FirstName, employee.LastName);
 
-            await _employeeService.Create(employee);
+            var created = await _employeeService.Create(employee);
 
-            return CreatedAtRoute("getEmployeeById", new { id = employee.EmployeeId }, employee);
+            return CreatedAtRoute("getEmployeeById", new { id = employee.EmployeeId }, EmployeeOutput.From(created));
         }
 
         [HttpGet("{id}", Name = "getEmployeeById")]
@@ -39,7 +39,7 @@ namespace CodeChallenge.Controllers
             if (employee == null)
                 return NotFound();
 
-            return Ok(employee);
+            return Ok(EmployeeOutput.From(employee));
         }
 
         [HttpPut("{id}")]
@@ -52,7 +52,7 @@ namespace CodeChallenge.Controllers
             if (updated == null)
                 return NotFound();
 
-            return Ok(updated);
+            return Ok(EmployeeOutput.From(updated));
         }
     }
 }

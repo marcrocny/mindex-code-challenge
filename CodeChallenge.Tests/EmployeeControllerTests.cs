@@ -73,7 +73,7 @@ namespace CodeChallenge.Tests.Integration
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var employee = await response.DeserializeContent<Employee>();
+            var employee = await response.DeserializeContent<EmployeeOutput>();
             employee.FirstName.Should().Be(expectedFirstName);
             employee.LastName.Should().Be(expectedLastName);
         }

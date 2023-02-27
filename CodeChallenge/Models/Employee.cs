@@ -9,6 +9,6 @@ namespace CodeChallenge.Models
         public string LastName { get; set; }
         public string Position { get; set; }
         public string Department { get; set; }
-        public List<Employee> DirectReports { get; set; }
+        public ICollection<Employee> DirectReports { get; set; }
     }
 }
