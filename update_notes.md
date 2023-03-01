@@ -22,7 +22,7 @@ There are some other minor refactorings which would be more involved but I avoid
         * Removes need for `FixUpReferences`
 * Json.NET → System.Text.Json everywhere.
 
-Other major refactorings what could be undertaken:
+Other major refactorings that could be undertaken:
 
 * Logging middleware.
 * Error catching middleware.
@@ -31,6 +31,7 @@ Other major refactorings what could be undertaken:
 * Adding fully separated input, output and data models, using a mapping tool (e.g., AutoMapper) for transformations.
     * This would be required to fix the apparent discrepancy between the existing output and
         model described in the documentation.
+* Adding Swagger documentation--even for non-public APIs, this is very useful.
 
 ## Task 1 Notes
 Introduced a simple iterative query mechanism. An "including children" query was added separately, so as
@@ -39,4 +40,13 @@ require changing the PUT to a more strict "update" model, since the existing "re
 the hierarchy and causing side-effects from the existing integration test.
 
 A more complete solution would require a change to the data model. Most promising would be taking advantage
-of the EF `HierarchyId`.
+of the EF `HierarchyId`. This allows for much quicker depth-first querying.
+
+## Task 2 Notes
+This implementation uses a more strict Data/Service model dichotomy with manual mapping between the two.
+
+There was ambiguity in the key. I flattened `EffectiveDate` to a true date (omitting the time portion on save, if provided) and opted to make EmployeeId-EffectiveDate the PK. Subsequent `PUT`s to the same employee-date will update the saved `Salary`.
+
+The empty/not-found logic is based on the composition relationship of `Compensation` under `Employee`.
+
+Tests use System.Text.Json (this should be the standard for new projects in .NET 6) and `async` test tasks.
