@@ -5,12 +5,12 @@ using System.Text;
 
 using CodeChallenge.Models;
 
-using CodeCodeChallenge.Tests.Integration.Extensions;
-using CodeCodeChallenge.Tests.Integration.Helpers;
+using CodeChallenge.Tests.Integration.Extensions;
+using CodeChallenge.Tests.Integration.Helpers;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CodeCodeChallenge.Tests.Integration
+namespace CodeChallenge.Tests.Integration
 {
     [TestClass]
     public class EmployeeControllerTests
@@ -20,7 +20,6 @@ namespace CodeCodeChallenge.Tests.Integration
 
         [ClassInitialize]
         // Attribute ClassInitialize requires this signature
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public static void InitializeClass(TestContext context)
         {
             _testServer = new TestServer();
